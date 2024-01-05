@@ -1,4 +1,4 @@
-function [BA, S_1, S_2] = reverse_kron(AB, ASize, BSize)
+function [S_1, S_2] = reverse_kron(AB, ASize, BSize)
 
 %%
 % B\kron A = S_1 A\kron B S_2
@@ -23,4 +23,4 @@ for i=1:n2
     S_2 = [S_2;I_n(i:n2:n1*n2, :)];
 end
 
-BA = S_1*AB*S_2';
+% BA = S_1*AB*S_2';
