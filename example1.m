@@ -1,82 +1,75 @@
-r = 3; 
+global M N r
+r = 2;
+itnumb = 100;
 % m_list = randi([3,4],[1, r]); % m_list = [m_1, m_2, ..., m_r] 1\leq m_i\leq 6
 % n_list = [];
 % for i=1:r
 %     n_list = [n_list, randi([2,m_list(i)])];
 % end
-m_list = [2, 3, 4];
-n_list = [2, 2, 3];
+m_list = [5, 4];
+n_list = [3, 2];
  % n_list = [n_1, n_2, ..., n_r] 1\leq n_i\leq 6
+
 M = prod(m_list);
 N = prod(n_list);
 %% Given an initial state
 AList = {}; % generate ground state \rho = A_1\ot A_2...A_r
 UList = {}; % generate initial guesses U_1\ot U_2...U_r
-A = 1;
+A = randn(M,N);
 U = 1;
 for i = 1:r
-    [A0, S, V] = svd(rand(m_list(i)));
-    A0 = A0(:, 1:n_list(i)); %size(Q) = (m_i, n_i)
-    AList{end+1} = A0; %% append A_i to generating array
-    A = kron(A, A0);
+    % [A0, S, V] = svds(rand(m_list(i)));
+    % A0 = A0(:, 1:n_list(i)); %size(Q) = (m_i, n_i)
+    % AList{end+1} = A0; %% append A_i to generating array
+    % A = kron(A, A0);
 
     %%%%%%%%%%%%%%% initial guess %%%%%%%%%%%%%%%%%%%
-    [U0, S, V] = svd(rand(m_list(i)));
-    U0 = U0(:, 1:n_list(i)); %size(Q) = (m_i, n_i)
+    [U0, S, V] = svds(rand(m_list(i)), n_list(i));
+     %size(Q) = (m_i, n_i)
     UList{end+1} = U0; %% append U_i to generating array
     U = kron(U, U0);
 end
 
 %% Calculate \nabla h
-hGrad_re = {}; % store \partial h/\partial U
-hGrad_im = {};
-for i=2:2
+
+
+%% Polar decomposition
+P = 1; % The number of repeated trials.
+
+UItes = {UList};
+iteP = 1;
+UNext = U;
+ResAll = [1/2*norm(A-UNext,'fro')^2];
+
+for idx = 1:r
+    disp(UTrail{idx})
+end
+while iteP < itnumb
+    UTrail =  UItes{end};
     
-    A_tmp = A;
-    if i>1
-        % reverse U_1 \ot U_2 \ot U_3 --> U_2 \ot U_3 \ot U_1 
-        mBackSize = prod(m_list(1:i-1));
-        nBackSize = prod(n_list(1:i-1));
+
+    for idx = 1:r
+        [hGrad_re, hGrad_im, hGrad] = compGrad(A, UTrail, m_list, n_list, idx);
+        [U_polor, P_polor] = poldec(hGrad);
         
-        mForSize = prod(m_list(i:end));
-        nForSize = prod(n_list(i:end));
-        
-        [S1, S2] = reverse_kron(U, [mBackSize, nBackSize], [mForSize, nForSize]);
-        A_tmp = S1'*A*S2;
-    end
-    % <A, U_1\ot....\ot U_n> = <A(U_1\ot...\U^_i\ot U_n), U_i>
-    % separate A to cell form
-    rowDist = ones(1, m_list(i)).*M/m_list(i);
-    colDist = ones(1, n_list(i)).*N/n_list(i);
-    
-
-    Asep = mat2cell(A_tmp, rowDist, colDist);
-    % compute A(U_1\ot...\U^_i\ot U_n)
-    backUni = 1;
-
-    if i+1<=r
-        for j=i+1:r
-            backUni = kron(backUni, UList{j});
+        UTrail{idx} = U_polor;
+        UNext = 1;
+        for j=1:r
+            UNext = kron(UNext, UTrail{j});
         end
+        disp(UTrail{idx})
+        ResAll = [ResAll, 1/2*norm(A-UNext,'fro')^2];
+
     end
 
-    if i-1>=1
-        for j=1:i-1
-            backUni = kron(backUni, UList{j});
-        end
-    end
-    disp(size(backUni));
-    A_sep_conj = cellfun(@(a) conj(a), Asep, 'UniformOutput', 0);
-    dh = cellfun(@(a) sum(dot(a,backUni)), A_sep_conj, 'UniformOutput', 1);
+    UItes{end+1} = UTrail;
     
-    % dh_conj = cellfun(@(a) sum(dot(a,conj(backUni))), conj(Asep), 'UniformOutput', 1);
-    
-    % Wrintinger
-    hGrad_re{end+1} = 2*real(dh);
-    hGrad_im{end+1} = 2*imag(dh);
+    iteP = iteP+1;        
 end
 
 
-
-
+        
+        
+figure(1)
+semilogy(ResAll','-')
 

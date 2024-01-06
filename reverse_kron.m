@@ -1,4 +1,4 @@
-function [S_1, S_2] = reverse_kron(AB, ASize, BSize)
+function [S_1, S_2] = reverse_kron( ASize, BSize)
 
 %%
 % B\kron A = S_1 A\kron B S_2
