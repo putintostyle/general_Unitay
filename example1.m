@@ -1,10 +1,11 @@
-r = 2; 
-m_list = randi([3,4],[1, r]); % m_list = [m_1, m_2, ..., m_r] 1\leq m_i\leq 6
-n_list = [];
-for i=1:r
-    n_list = [n_list, randi([2,m_list(i)])];
-end
-
+r = 3; 
+% m_list = randi([3,4],[1, r]); % m_list = [m_1, m_2, ..., m_r] 1\leq m_i\leq 6
+% n_list = [];
+% for i=1:r
+%     n_list = [n_list, randi([2,m_list(i)])];
+% end
+m_list = [2, 3, 4];
+n_list = [2, 2, 3];
  % n_list = [n_1, n_2, ..., n_r] 1\leq n_i\leq 6
 M = prod(m_list);
 N = prod(n_list);
@@ -27,8 +28,10 @@ for i = 1:r
 end
 
 %% Calculate \nabla h
-hGrad = {}; % store \partial h/\partial U
-for i=1:2
+hGrad_re = {}; % store \partial h/\partial U
+hGrad_im = {};
+for i=2:2
+    
     A_tmp = A;
     if i>1
         % reverse U_1 \ot U_2 \ot U_3 --> U_2 \ot U_3 \ot U_1 
@@ -62,7 +65,18 @@ for i=1:2
             backUni = kron(backUni, UList{j});
         end
     end
-    dh = cellfun(@(a) sum(dot(a,backUni)), Asep, 'UniformOutput', 1);
-    hGrad{end+1} = dh;
+    disp(size(backUni));
+    A_sep_conj = cellfun(@(a) conj(a), Asep, 'UniformOutput', 0);
+    dh = cellfun(@(a) sum(dot(a,backUni)), A_sep_conj, 'UniformOutput', 1);
+    
+    % dh_conj = cellfun(@(a) sum(dot(a,conj(backUni))), conj(Asep), 'UniformOutput', 1);
+    
+    % Wrintinger
+    hGrad_re{end+1} = 2*real(dh);
+    hGrad_im{end+1} = 2*imag(dh);
 end
+
+
+
+
 
