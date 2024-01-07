@@ -12,7 +12,7 @@ if idx>1
     mForSize = prod(m_list(idx:end));
     nForSize = prod(n_list(idx:end));
         
-    [S1, S2] = reverse_kron([mBackSize, nBackSize], [mForSize, nForSize]);
+    [S1, S2] = reverse_kron( [mForSize, nForSize], [mBackSize, nBackSize]);
     A_tmp = S1'*A*S2;
     
 end
@@ -39,7 +39,7 @@ if idx-1>=1
         backUni = kron(backUni, UList{j});
     end
 end
-    
+
 A_sep_conj = cellfun(@(a) conj(a), Asep, 'UniformOutput', 0);
 dh = cellfun(@(a) sum(a.*backUni, 'all'), A_sep_conj, 'UniformOutput', 1);
     
