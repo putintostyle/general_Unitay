@@ -1,6 +1,6 @@
 global M N r
 r = 5; % number of unitary matrices
-itnumb = 100; % given iteration number
+itnumb = 20; % given iteration number
 %% Generating size of unitary matrices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  we give U_i = m_i*n_i where m_i>=n_i
@@ -70,8 +70,13 @@ while iteP < itnumb
 end
 
 
-        
-        
+%% PLOT       
+% first figure: error norm        
 figure(1)
 semilogy(ResAll','-')
+title('Evolution of residuals','Interpreter','latex','FontSize',20)
+xlabel('number of iterations','Interpreter','latex','FontSize',18)
+ylabel('residuals','Interpreter','latex','FontSize',18)
+
+
 
