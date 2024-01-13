@@ -1,6 +1,7 @@
 global M N r
 r = 4; % number of unitary matrices
-itnumb = 100; % given iteration number
+itnumb = 100; % iteration number
+TRnum = 1000; % Repeat trail number
 %% Generating size of unitary matrices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  we give U_i = m_i*n_i where m_i>=n_i
@@ -20,7 +21,7 @@ A = 0.5-rand([M,N]);% initialize A
 
 %% Set experience, 500 trails
 trailResHistory = []; % store ultimate res
-for trails = 1:500
+for trails = 1:TRnum
     UList = {};
     U = 1; % initialize U
     for i = 1:r
@@ -67,20 +68,39 @@ for trails = 1:500
 end
 
 %% PLOT       
-% first figure: error norm        
+% first figure: error norm    
+color = [205, 133, 63]./255; % define color in RGB space
+%%%%%%% PLOT SCATTER %%%%%%%
 figure(1)
-scatter(1:500, trailResHistory, '.');
 
+scatter(1:TRnum, trailResHistory, '.');
+axscatter = gca;
+
+%%%%%%% PLOT HISTOGRAM %%%%%%%
+figure(2)
+[counts,bins] = hist(trailResHistory, 100); % get counts and bin locations
+
+h = barh(bins,counts, 'facecolor', color);
+set(get(h,'Parent'),'xdir','r') % reverse histogram in x direction
+axhist = gca;
+
+%%%%%%% PLOT HISTOGRAM %%%%%%%
+figure(3)
 hold on
-axscatter = gca; % current axes
+scatter(1:TRnum, trailResHistory, '.');
 
-[counts,bins] = hist(trailResHistory, 200); %# get counts and bin locations
-% Bh = bar(bins,counts,'facecolor','');
+[counts,bins] = hist(trailResHistory, 100);
+h = barh(bins,counts, 'facecolor', color);
+set(get(h,'Parent'),'xdir','r');
+xticks = axscatter.XTick;
 
-h = barh(bins,counts, 'facecolor', 'black');
-set(get(h,'Parent'),'xdir','r')
-
-
-
-hold off
-
+%%%% set xticks %%%
+ax1 = gca;
+ax2 = axes('Position', get(ax1, 'Position'),'Color', 'none');
+set(ax2, 'XAxisLocation', 'top','YAxisLocation','Right');
+set(ax2, 'XLim', get(ax1, 'XLim'),'YLim', get(ax1, 'YLim'));
+set(ax2, 'XTick', get(ax1, 'XTick'), 'YTick', get(ax1, 'YTick'));
+% Set the x-tick and y-tick  labels for the second axes
+XTick = linspace(min(axhist.XTick), max(axhist.XTick), length(axscatter.XTick));
+set(ax2, 'XTickLabel', XTick(end:-1:1),'YTickLabel',axhist.YTick, 'XColor', color, 'YColor', color);
+set(ax1, 'XTickLabel', axscatter.XTick(end:-1:1));
