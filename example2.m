@@ -82,8 +82,10 @@ figure(2)
 
 h = barh(bins,counts, 'facecolor', color);
 set(get(h,'Parent'),'xdir','r') % reverse histogram in x direction
-axhist = gca;
 
+xlabel('Trails')
+ylabel('Residual')
+axhist = gca;
 %%%%%%% PLOT HISTOGRAM %%%%%%%
 figure(3)
 hold on
@@ -93,7 +95,6 @@ scatter(1:TRnum, trailResHistory, '.');
 h = barh(bins,counts, 'facecolor', color);
 set(get(h,'Parent'),'xdir','r');
 xticks = axscatter.XTick;
-
 %%%% set xticks %%%
 ax1 = gca;
 ax2 = axes('Position', get(ax1, 'Position'),'Color', 'none');
@@ -104,3 +105,7 @@ set(ax2, 'XTick', get(ax1, 'XTick'), 'YTick', get(ax1, 'YTick'));
 XTick = linspace(min(axhist.XTick), max(axhist.XTick), length(axscatter.XTick));
 set(ax2, 'XTickLabel', XTick(end:-1:1),'YTickLabel',axhist.YTick, 'XColor', color, 'YColor', color);
 set(ax1, 'XTickLabel', axscatter.XTick(end:-1:1));
+ax1.XLabel.String = "Trails" ;
+ax1.YLabel.String = "Residual" ;
+ax2.YLabel.String = "Residual" ;
+ax2.XLabel.String = "Frequency" ;
