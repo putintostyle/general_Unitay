@@ -21,12 +21,12 @@ if idx>1 % start from U_2
     nForSize = prod(n_list(idx:end));
         
     [S1, S2] = reverse_kron( [mForSize, nForSize], [mBackSize, nBackSize]);
-    %%%% <A, U \ot V \ot W> = <A, S1 \ot V \ot W \ot U S2'> 
+    %%%% <A, U \ot V \ot W> = <A, S1 V \ot W \ot U S2'> 
     %%%% S1 from \ot V \ot W <- [mForSize, nForSize] 
     %%%%
     %%%% S2 from U <- [mBackSize, nBackSize] 
     %%%% 
-    %%%% <A, U \ot V \ot W> = <A, S1 \ot V \ot W \ot U S2'>  
+    %%%% <A, U \ot V \ot W> = <A, S1 V \ot W \ot U S2'>  
     %%%%                    = <S1'*A*S2,V\ot(W\ot U)>
     
     A_tmp = S1'*A*S2;
@@ -38,7 +38,6 @@ end
 rowDist = ones(1, m_list(idx)).*(M/m_list(idx));
 colDist = ones(1, n_list(idx)).*(N/n_list(idx));
     
-
 Asep = mat2cell(A_tmp, rowDist, colDist);
 
 %%%%%%%%% compute A(U_1\ot...\U^_i\ot U_n)
@@ -56,14 +55,26 @@ if idx-1>=1
     end
 end
 
-%%%% <S1'*A*S2,V\ot(W\ot U)> = <\inner(block[S1'*A*S2], (W\ot U)), V>
+%%%% <S1'*A*S2,V\ot(W\ot U)>_R 
+%%%% Let block[S1'*A*S2] = \tildeA; (W\ot U) = WU
+%%%%  = <inner((\tildeA)_r, (WU)_r), V_r> - <inner((\tildeA)_r, (WU)_i), V_i>
+%%%%   + <inner((\tildeA)_i, (WU)_r), V_i> + <inner((\tildeA)_i, (WU)_i), V_r>
+
+%%%%  = <inner((\tildeA)_r, (WU)_r)+inner((\tildeA)_i, (WU)_i), V_r>
+%%%%   + <inner((\tildeA)_i, (WU)_r)-inner((\tildeA)_r, (WU)_i), V_i>
+
+%%%% d/dV_r = inner((\tildeA)_r, (WU)_r)+inner((\tildeA)_i, (WU)_i) 
+%%%%        = real(inner(cong(\tildeA), WU)
+
+%%%% d/dV_i = inner((\tildeA)_i, (WU)_r)-inner((\tildeA)_r, (WU)_i) 
+%%%%        = -imag(inner(cong(\tildeA), WU)
 
 A_sep_conj = cellfun(@(a) conj(a), Asep, 'UniformOutput', 0);
 
-dh = cellfun(@(a) sum(a.*backUni, 'all'), A_sep_conj, 'UniformOutput', 1);
-    
+dh_re = cellfun(@(a) real(sum(a.*backUni, 'all')), A_sep_conj, 'UniformOutput', 1);
+dh_im = -1*cellfun(@(a) imag(sum(a.*backUni, 'all')), A_sep_conj, 'UniformOutput', 1);
 
-hGrad_re = 2*real(dh);
-hGrad_im = 2*imag(dh);
-hGrad = dh;
+hGrad_re = dh_re;
+hGrad_im = dh_im;
+hGrad = dh_re+sqrt(-1).*dh_im;
 

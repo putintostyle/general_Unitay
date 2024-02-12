@@ -109,3 +109,4 @@ ax1.XLabel.String = "Trails" ;
 ax1.YLabel.String = "Residual" ;
 ax2.YLabel.String = "Residual" ;
 ax2.XLabel.String = "Frequency" ;
+exportgraphics(gcf,'example_2_closest.eps','Resolution',300);

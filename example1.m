@@ -1,16 +1,16 @@
 global M N r
-r = 5; % number of unitary matrices
-itnumb = 20; % given iteration number
+r = 4; % number of unitary matrices
+itnumb = 10; % given iteration number
 %% Generating size of unitary matrices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  we give U_i = m_i*n_i where m_i>=n_i
 %%%  First determine the row number of U_i 
 %%%  then the column number
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-m_list = randi([3,4],[1, r]); % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
+m_list = randi([4,9],[1, r]); % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
 n_list = [];
 for i=1:r
-    n_list = [n_list, randi([2,m_list(i)])];
+    n_list = [n_list, randi([3,m_list(i)])];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%
 M = prod(m_list);
@@ -74,9 +74,10 @@ end
 % first figure: error norm        
 figure(1)
 semilogy(ResAll','-')
-title('Evolution of residuals','Interpreter','latex','FontSize',20)
-xlabel('number of iterations','Interpreter','latex','FontSize',18)
-ylabel('residuals','Interpreter','latex','FontSize',18)
-
+title('Evolution of residuals','Interpreter','latex','FontSize',15)
+xlabel('Update steps','Interpreter','latex','FontSize',12)
+ylabel('Residuals, $\frac{1}{2}||A-U_1\otimes\cdots\otimes U_5||_F^2$','Interpreter','latex','FontSize',12)
+grid on
+exportgraphics(gcf,'example_1_closest.eps','Resolution',300);
 
 

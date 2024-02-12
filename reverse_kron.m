@@ -1,7 +1,7 @@
 function [S_1, S_2] = reverse_kron( ASize, BSize)
 
 %%
-% B\kron A = S_1 A\kron B S_2
+% B\kron A = S_1 A\kron B S_2'
 % S_1 = M_m1xm2, S_2 = M_n1xn2
 m1 = ASize(1);
 n1 = ASize(2);
