@@ -1,5 +1,5 @@
 global M N r
-r = 4; % number of unitary matrices
+r = 5; % number of unitary matrices
 itnumb = 10; % given iteration number
 J = sqrt(-1);
 %% Generating size of unitary matrices
@@ -84,6 +84,6 @@ title('Evolution of residuals','Interpreter','latex','FontSize',15)
 xlabel('Update steps','Interpreter','latex','FontSize',12)
 ylabel('Residuals, $\frac{1}{2}||A-U_1\otimes\cdots\otimes U_5||_F^2$','Interpreter','latex','FontSize',12)
 grid on
-exportgraphics(gcf,'example_1_closest.eps','Resolution',300);
+exportgraphics(gcf,'example_1_closest_cpx.eps','Resolution',300);
 
 
