@@ -1,5 +1,5 @@
 global M N r
-r = 5; % number of unitary matrices
+r = 2; % number of unitary matrices
 itnumb = 10; % given iteration number
 J = sqrt(-1);
 %% Generating size of unitary matrices
@@ -8,11 +8,12 @@ J = sqrt(-1);
 %%%  First determine the row number of U_i 
 %%%  then the column number
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-m_list = randi([4,9],[1, r]); % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
-n_list = [];
-for i=1:r
-    n_list = [n_list, randi([3,m_list(i)])];
-end
+m_list = [3,5]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
+n_list = m_list;
+% n_list = [];
+% for i=1:r
+%     n_list = [n_list, randi([3,m_list(i)])];
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%
 M = prod(m_list);
 N = prod(n_list);
@@ -40,10 +41,10 @@ for i = 1:r
     %%%% append U_i to generating array
     UList{end+1} = U0;
 end
-
+tic
 %% Polar decomposition
 P = 1; % The number of repeated trials.
-
+% disp(cond(A))
 %%% Store U_i^p at each iteration p
 UItes = {UList};
 iteP = 1;
@@ -51,14 +52,15 @@ iteP = 1;
 UNext = U;
 ResAll = [1/2*norm(A-UNext,'fro')^2];
 
-
+disp(cond(A))
 while iteP < itnumb
 
     UTrail =  UItes{end};
     
     for idx = 1:r
+        
         [hGrad_re, hGrad_im, hGrad] = compGrad(A, UTrail, m_list, n_list, idx); % compute the gradient dh/dU_i
-        [U_polor, P_polor] = poldec(hGrad); % do polar decomp
+        [U_polor, P_polor] = poldec_new(hGrad); % do polar decomp
         
         UTrail{idx} = U_polor; % renew U_i^p -> U_i^{p+1}
         UNext = 1;
@@ -74,7 +76,7 @@ while iteP < itnumb
     
     iteP = iteP+1;        
 end
-
+toc
 
 %% PLOT       
 % first figure: error norm        
@@ -84,6 +86,6 @@ title('Evolution of residuals','Interpreter','latex','FontSize',15)
 xlabel('Update steps','Interpreter','latex','FontSize',12)
 ylabel('Residuals, $\frac{1}{2}||A-U_1\otimes\cdots\otimes U_5||_F^2$','Interpreter','latex','FontSize',12)
 grid on
-exportgraphics(gcf,'example_1_closest_cpx.eps','Resolution',300);
+% exportgraphics(gcf,'low_example_1_closest_cpx.eps','Resolution',300);
 
-
+% save('low_square_example1.mat')

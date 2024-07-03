@@ -1,15 +1,16 @@
 global M N r
 r = 4; % number of unitary matrices
-itnumb = 100; % iteration number
-TRnum = 1000; % Repeat trail number
+itnumb = 20; % iteration number
+TRnum = 500; % Repeat trail number
+J = sqrt(-1);
 %% Generating size of unitary matrices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  we give U_i = m_i*n_i where m_i>=n_i
 %%%  First determine the row number of U_i 
 %%%  then the column number
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-m_list = [6, 4, 3, 2]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
-n_list = [2, 3, 2, 2];
+m_list = [4, 3, 3, 5]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
+n_list = m_list;
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 M = prod(m_list);
@@ -17,7 +18,7 @@ N = prod(n_list);
 %% Given an initial state
 
 
-A = 0.5-rand([M,N]);% initialize A
+A = 0.5-rand([M,N])+J*(0.5-rand([M,N]));% initialize A
 
 %% Set experience, 500 trails
 trailResHistory = []; % store ultimate res
@@ -27,7 +28,8 @@ for trails = 1:TRnum
     for i = 1:r
         %%%%%%%%%%%%%%% initial guess %%%%%%%%%%%%%%%%%%%
         %%%% size(A0) = (m_i, n_i) and U = U_1\ot U_2 \ot ...\ot U_r
-        [U0, S, V] = svds(rand(m_list(i)), n_list(i));
+        matrx = rand(m_list(i), n_list(i))+J*rand(m_list(i), n_list(i));
+        [U0, S, V] = svd(matrx, 'econ');
         U = kron(U, U0);
         %%%% append U_i to generating array
         UList{end+1} = U0;
@@ -47,7 +49,7 @@ for trails = 1:TRnum
         
         for idx = 1:r
             [hGrad_re, hGrad_im, hGrad] = compGrad(A, UTrail, m_list, n_list, idx); % compute the gradient dh/dU_i
-            [U_polor, P_polor] = poldec(hGrad); % do polar decomp
+            [U_polor, P_polor] = poldec_new(hGrad); % do polar decomp
             
             UTrail{idx} = U_polor; % renew U_i^p -> U_i^{p+1}
             UNext = 1;
@@ -66,7 +68,7 @@ for trails = 1:TRnum
             
    trailResHistory = [trailResHistory; 1/2*norm(A-UNext, 'fro')^2] ;
 end
-
+save('square_example_2.mat')
 %% PLOT       
 % first figure: error norm    
 color = [205, 133, 63]./255; % define color in RGB space
@@ -109,4 +111,4 @@ ax1.XLabel.String = "Trails" ;
 ax1.YLabel.String = "Residual" ;
 ax2.YLabel.String = "Residual" ;
 ax2.XLabel.String = "Frequency" ;
-exportgraphics(gcf,'example_2_closest.eps','Resolution',300);
+exportgraphics(gcf,'square_example_2_closest.eps','Resolution',300);

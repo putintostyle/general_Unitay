@@ -27,8 +27,7 @@ if idx>1 % start from U_2
     %%%% S2 from U <- [mBackSize, nBackSize] 
     %%%% 
     %%%% <A, U \ot V \ot W> = <A, S1 V \ot W \ot U S2'>  
-    %%%%                    = <S1'*A*S2,V\ot(W\ot U)>
-    
+    %%%%                    = <S1'*A*S2, V\ot(W\ot U)> 
     A_tmp = S1'*A*S2;
     
 end

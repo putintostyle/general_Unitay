@@ -1,5 +1,5 @@
 global M N r
-r = 4; % number of unitary matrices
+r = 3; % number of unitary matrices
 itnumb = 10; % given iteration number
 %% Generating size of unitary matrices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -7,11 +7,13 @@ itnumb = 10; % given iteration number
 %%%  First determine the row number of U_i 
 %%%  then the column number
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-m_list = randi([4,9],[1, r]); % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
-n_list = [];
-for i=1:r
-    n_list = [n_list, randi([3,m_list(i)])];
-end
+% m_list = randi([4,9],[1, r]); % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
+% n_list = [];
+% for i=1:r
+%     n_list = [n_list, randi([3,m_list(i)])];
+% end
+m_list = [2, 2, 2]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
+n_list = [2, 2, 2];
 %%%%%%%%%%%%%%%%%%%%%%%%
 M = prod(m_list);
 N = prod(n_list);
@@ -34,7 +36,15 @@ for i = 1:r
     %%%% append U_i to generating array
     UList{end+1} = U0;
 end
-
+A = [ 
+     1     0     0     0     0     0     0     0;
+     0     1     0     0     0     0     0     0;
+     0     0     1     0     0     0     0     0;
+     0     0     0     1     0     0     0     0;
+     0     0     0     0     1     0     0     0;
+     0     0     0     0     0     1     0     0;
+     0     0     0     0     0     0     0     1;
+     0     0     0     0     0     0     1     0];
 %% Polar decomposition
 P = 1; % The number of repeated trials.
 
@@ -52,7 +62,7 @@ while iteP < itnumb
     
     for idx = 1:r
         [hGrad_re, hGrad_im, hGrad] = compGrad(A, UTrail, m_list, n_list, idx); % compute the gradient dh/dU_i
-        [U_polor, P_polor] = poldec(hGrad); % do polar decomp
+        [U_polor, P_polor] = poldec_new(hGrad); % do polar decomp
         
         UTrail{idx} = U_polor; % renew U_i^p -> U_i^{p+1}
         UNext = 1;
@@ -76,8 +86,8 @@ figure(1)
 semilogy(ResAll','-')
 title('Evolution of residuals','Interpreter','latex','FontSize',15)
 xlabel('Update steps','Interpreter','latex','FontSize',12)
-ylabel('Residuals, $\frac{1}{2}||A-U_1\otimes\cdots\otimes U_5||_F^2$','Interpreter','latex','FontSize',12)
+ylabel('Residuals, $\frac{1}{2}||A-U_1\otimes\cdots\otimes U_3||_F^2$','Interpreter','latex','FontSize',12)
 grid on
-exportgraphics(gcf,'example_1_closest.eps','Resolution',300);
+% exportgraphics(gcf,'example_1_closest.eps','Resolution',300);
 
 
