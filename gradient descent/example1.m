@@ -1,5 +1,5 @@
 global A M N r m_list n_list 
-r = 2; % number of unitary matrices
+r = 5; % number of unitary matrices
  % given iteration number
 J = sqrt(-1);
 %% Generating size of unitary matrices
@@ -8,7 +8,7 @@ J = sqrt(-1);
 %%%  First determine the row number of U_i 
 %%%  then the column number
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-m_list = [3,  5]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
+m_list = [3, 3, 4, 5, 6]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
 n_list = m_list;
 % n_list = [];
 % for i=1:r
@@ -56,8 +56,8 @@ T = 1000;
 dt = 1e-2;
 
 options = odeset('Abstol',1e-12,'Reltol',1e-12);
-% options = odeset(options,'Stats','on');
-% options = odeset(options,'Events',@myEventFcn);
+options = odeset(options,'Stats','on');
+options = odeset(options,'Events',@myEventFcn);
 dist_array = [];
 t_tag = [];
 tic
@@ -95,12 +95,12 @@ end
 % first figure: error norm        
 figure(1)
 loglog(t, ResAll','-')
-title('Evolution of residuals','Interpreter','latex','FontSize',15)
+title(['Evolution of residuals, r=', num2str(r)],'Interpreter','latex','FontSize',15)
 xlabel('Update steps','Interpreter','latex','FontSize',12)
-ylabel('Residuals, $\frac{1}{2}||A-U_1\otimes\cdots\otimes U_5||_F^2$','Interpreter','latex','FontSize',12)
+ylabel('Residuals, $\frac{1}{2}||A-U_1\otimes\cdots\otimes U_r||_F^2$','Interpreter','latex','FontSize',12)
 grid on
-% exportgraphics(gcf,'example_1_closest_cpx.eps','Resolution',300);
-
+exportgraphics(gcf,'533456.eps','Resolution',300);
+save('533456.mat')
 %%
 function gradFun = compGrad(t, y)
     %%%%%%
@@ -206,4 +206,30 @@ function gradFun = compGrad(t, y)
         hGrad_im = imag(hGrad);
         gradFun = [gradFun; hGrad_re(:); hGrad_im(:)];
     end
+end
+
+function [value, isterminal, direction] = myEventFcn(t,yn)
+global A M N r m_list n_list 
+    cum_idx = 1;
+    Un = 1;
+    for i=1:r
+        matrix_size = m_list(i)*n_list(i);
+        s_idx = cum_idx;
+        e_idx = s_idx+matrix_size-1;
+        UR = reshape(yn(s_idx:e_idx), [m_list(i), n_list(i)]);
+
+        s_idx = e_idx+1;
+        e_idx = s_idx+matrix_size-1;
+        UI = reshape(yn(s_idx:e_idx), [m_list(i), n_list(i)]);
+        
+        Un = kron(Un, UR+sqrt(-1)*UI);
+        cum_idx = e_idx+1;
+    end
+
+    
+    ResAll  = 1/2*norm(A-Un, 'fro')^2;
+    
+    value = ResAll-(1e-17);
+    isterminal = [1];
+    direction  = -[1];
 end

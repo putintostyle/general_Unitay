@@ -1,6 +1,6 @@
 global M N r
-r = 2; % number of unitary matrices
-itnumb = 10; % given iteration number
+r = 5; % number of unitary matrices
+itnumb = 100; % given iteration number
 J = sqrt(-1);
 %% Generating size of unitary matrices
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -8,7 +8,7 @@ J = sqrt(-1);
 %%%  First determine the row number of U_i 
 %%%  then the column number
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-m_list = [3,5]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
+m_list = [3, 3, 4, 5, 6]; % m_list = [m_1, m_2, ..., m_r] 3\leq m_i\leq 4
 n_list = m_list;
 % n_list = [];
 % for i=1:r
@@ -69,9 +69,14 @@ while iteP < itnumb
         end
         
         ResAll = [ResAll, 1/2*norm(A-UNext,'fro')^2];
+        if ResAll(end)<1e-17
+            break
+        end
 
     end
-
+    if ResAll(end)<1e-17
+            break
+    end
     UItes{end+1} = UTrail;
     
     iteP = iteP+1;        
